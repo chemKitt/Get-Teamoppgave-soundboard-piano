@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<head>
+<meta charset="utf-8">
+<title>Soundboard</title>
+</head>
+<style>
+    body {
+        user-select: none;
+    }  
+</style>
+<body>
+    <svg xml:space="preserve" width="644px" height="480px">
+        <rect id="C" onclick="playSound(this.id)" style="fill:white;stroke:black" x="0" y="0" width="92" height="480"/>
+        <rect id="D" onclick="playSound(this.id)" style="fill:white;stroke:black" x="92" y="0" width="92" height="480"/>
+        <rect id="E" onclick="playSound(this.id)" style="fill:white;stroke:black" x="184" y="0" width="92" height="480"/>
+        <rect id="F" onclick="playSound(this.id)" style="fill:white;stroke:black" x="276" y="0" width="92" height="480"/>
+        <rect id="G" onclick="playSound(this.id)" style="fill:white;stroke:black" x="368" y="0" width="92" height="480"/>
+        <rect id="A" onclick="playSound(this.id)" style="fill:white;stroke:black" x="460" y="0" width="92" height="480"/>
+        <rect id="B" onclick="playSound(this.id)" style="fill:white;stroke:black" x="552" y="0" width="92" height="480"/>
+
+        <rect id="Cs" onclick="playSound(this.id)" style="fill:black;stroke:black" x="57.33332" y="0" width="52" height="320"/>
+        <rect id="Ds" onclick="playSound(this.id)" style="fill:black;stroke:black" x="166.66664" y="0" width="52" height="320"/>
+        <rect id="Fs" onclick="playSound(this.id)" style="fill:black;stroke:black" x="329" y="0" width="52" height="320"/>
+        <rect id="Gs" onclick="playSound(this.id)" style="fill:black;stroke:black" x="433" y="0" width="52" height="320"/>
+        <rect id="As" onclick="playSound(this.id)" style="fill:black;stroke:black" x="539" y="0" width="52" height="320"/>
+        </svg>
+        <p><button onclick="record()">Record</button></p>
+        <p><button onclick="playback()">Play</button></p>
+
+<script>
+    // model
+    var noteLinks = {
+        C: "http://www.vibrationdata.com/piano_middle_C.mp3",
+        Cs: "http://www.vibrationdata.com/piano_C_sharp.mp3",
+        D: "http://www.vibrationdata.com/piano_D.mp3",
+        Ds: "http://www.vibrationdata.com/piano_D_sharp.mp3",
+        E: "http://www.vibrationdata.com/piano_E.mp3",
+        F: "http://www.vibrationdata.com/piano_F.mp3",
+        Fs: "http://www.vibrationdata.com/piano_F_sharp.mp3",
+        G: "http://www.vibrationdata.com/piano_G.mp3",
+        Gs: "http://www.vibrationdata.com/piano_G_sharp.mp3",
+        A: "http://www.vibrationdata.com/piano_A.mp3",
+        As: "http://www.vibrationdata.com/piano_A_sharp.mp3",
+        B: "http://www.vibrationdata.com/piano_B.mp3"
+    }
+    var recording = false;
+    var playbackOrder = []
+    var delay = 0;
+    var waiting = 0;
+    var index = 0;
+    var interval;
+    
+    function playSound(semitone) {
+            var note = new Audio(noteLinks[semitone]);
+            note.play();
+
+            if (recording == true) {
+                playbackOrder.push(waiting);
+                clearInterval(interval);
+                waiting = 0;
+                interval = setInterval(function() {
+                    waiting += 10;
+                },10);
+                playbackOrder.push(semitone);
+            }
+    }
+
+    function record() {
+        if (recording == true) {
+            recording = false;
+        } else {
+        recording = true;
+        }
+    }
+
+    function playback() {
+        console.log("playback has been run");
+        if (index < playbackOrder.length && typeof playbackOrder[index] == "number") {
+            if (index == 0) {
+                index++;
+                playback();
+            } else {
+                setTimeout(playback,playbackOrder[index]);
+                index++;
+            }
+            
+        }
+        else if (index < playbackOrder.length) {
+            playSound(playbackOrder[index]);
+            index++;
+            playback();
+        } else {return;}
+        
+    }
+</script>
+</body>
+</html>
